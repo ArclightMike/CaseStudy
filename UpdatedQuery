@@ -96,7 +96,20 @@ JOIN #CaliforniaProductTypes pt ON s.[Product Type] = pt.PrdTyp
 JOIN #SalesYears pt ON YEAR(s.[Product Type]) = pt.PrdTyp
 WHERE s.[Location - State] = 'CA';
 
+--Fill with nationwide toy sales.
+INSERT INTO #Q3Results (TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp)
+SELECT s.[Transaction ID], s.[Transaction Type], s.[Product Code], s.[Product Type], s.[Date of Sale], s.[Location - State], s.[Sale Price], s.[Payment Type] 
+FROM SalesTransactions s
+JOIN #SalesYears pt ON YEAR(s.[Product Type]) = pt.PrdTyp
+WHERE [s.Product Type] = 'Toys'
+
 --Return query, further filtering the results from temp table that were already filtered on state, product, and year.
 SELECT TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp
 FROM #Q3Results
 WHERE ((MONTH(SleDat) >= 7) AND (PrdCod NOT BETWEEN 1000 AND 1999));
+
+--I wasn't clear on if the head of the furniture division wanted the same requirements around region and year,
+--but if so, then this query returns those results without the quarter.
+SELECT TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp
+FROM #Q3Results
+WHERE PrdTyp = 'Furniture';
