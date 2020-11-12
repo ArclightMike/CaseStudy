@@ -83,7 +83,7 @@ SELECT s.[Transaction ID], s.[Transaction Type], s.[Product Code], s.[Product Ty
 FROM SalesTransactions s
 JOIN #SouthEast se ON s.[Location - State] = se.LocStt
 JOIN #SouthEastProductTypes pt ON s.[Product Type] = pt.PrdTyp
-JOIN #SalesYears pt ON YEAR(s.[Product Type]) = pt.PrdTyp;
+JOIN #SalesYears pt ON YEAR(s.[Date of Sale]) = pt.SalesYear;
 
 --Fill with Great Lakes sales.  Table is only filtered by state, region products, and year.
 INSERT INTO #Q3Results (TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp)
@@ -91,21 +91,21 @@ SELECT s.[Transaction ID], s.[Transaction Type], s.[Product Code], s.[Product Ty
 FROM SalesTransactions s
 JOIN #GreatLakes gl ON s.[Location - State] = gl.LocStt
 JOIN #GreatLakesProductTypes pt ON s.[Product Type] = pt.PrdTyp
-JOIN #SalesYears pt ON YEAR(s.[Product Type]) = pt.PrdTyp;
+JOIN #SalesYears pt ON YEAR(s.[Date of Sale]) = pt.SalesYear;
 
 --Fill with specific state sales.  Table is only filtered by state, region products, and year.
 INSERT INTO #Q3Results (TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp)
 SELECT s.[Transaction ID], s.[Transaction Type], s.[Product Code], s.[Product Type], s.[Date of Sale], s.[Location - State], s.[Sale Price], s.[Payment Type] 
 FROM SalesTransactions s
 JOIN #CaliforniaProductTypes pt ON s.[Product Type] = pt.PrdTyp
-JOIN #SalesYears pt ON YEAR(s.[Product Type]) = pt.PrdTyp
+JOIN #SalesYears pt ON YEAR(s.[Date of Sale]) = pt.SalesYear
 WHERE s.[Location - State] = 'CA';
 
 --Fill with nationwide toy sales.
 INSERT INTO #Q3Results (TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp)
 SELECT s.[Transaction ID], s.[Transaction Type], s.[Product Code], s.[Product Type], s.[Date of Sale], s.[Location - State], s.[Sale Price], s.[Payment Type] 
 FROM SalesTransactions s
-JOIN #SalesYears pt ON YEAR(s.[Product Type]) = pt.PrdTyp
+JOIN #SalesYears pt ON YEAR(s.[Date of Sale]) = pt.SalesYear
 WHERE [s.Product Type] = 'Toys'
 
 --Return query
