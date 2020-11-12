@@ -1,0 +1,31 @@
+Select *
+From SalesTransactions
+WHERE 
+YEAR([Date of Sale]) IN (2018,2019,2020)
+AND
+(
+  (
+   [Location – State] IN (‘AL’, ‘AR’, ‘FL’, ‘GA’, ‘KY’, ‘LA’, ‘MS’, ‘NC’, ‘SC’, ‘TN’, ‘VA’)
+   AND 
+   MONTH([Date of Sale]) >= 7
+   AND [Product Type] in (‘Furniture’, ‘Electronics’, ’Clothing’, ‘Kitchen Appliances’, ‘Toys’)
+   AND ( [Product Code] < 1000
+               OR [Product Code] >= 2000 )
+     )
+   )
+OR
+(
+   [Location – State] IN (‘IL’, ‘IN’, ‘MI’, ‘MN’, ‘OH’, ‘PA’, ‘WI’)
+   AND MONTH([Date of Sale]) >= 7
+   AND [Product Type] in (’Clothing’, ’Shoes’, ‘Kitchen Appliances’, ‘Toys’)
+   )
+OR
+(
+   [Location – State] = ‘CA’
+   AND 
+   (MONTH([Date of Sale]) >= 7
+     AND [Product Type] in (‘Electronics’, ’Shoes’, ‘Toys’)
+     AND ([Product Code] < 1000
+               OR [Product Code] >= 2000))
+     )
+)
