@@ -1,3 +1,4 @@
+--First we'll set up some temp tables to make filtering easy.
 CREATE TABLE #Q3Results
 (
     TrnID INT,
@@ -74,7 +75,7 @@ INSERT INTO #SalesYears (SalesYear) VALUES (2018);
 INSERT INTO #SalesYears (SalesYear) VALUES (2019);
 INSERT INTO #SalesYears (SalesYear) VALUES (2020);
 
-
+--Now fill the results table.
 
 --Fill with southeast sales.  Table is only filtered by state, region products, and year.
 INSERT INTO #Q3Results (TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp)
@@ -107,7 +108,9 @@ FROM SalesTransactions s
 JOIN #SalesYears pt ON YEAR(s.[Product Type]) = pt.PrdTyp
 WHERE [s.Product Type] = 'Toys'
 
---Return query, further filtering the results from temp table that were already filtered on state, product, and year.
+--Return query
+
+--Further filtering the results from temp table that were already filtered on state, product, and year.
 SELECT TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp
 FROM #Q3Results
 WHERE ((MONTH(SleDat) >= 7) AND (PrdCod NOT BETWEEN 1000 AND 1999));
@@ -119,6 +122,7 @@ FROM #Q3Results
 WHERE PrdTyp = 'Furniture';
 --If there needs to be a single return query, we could union the results.
 
+--Clean up the temp tables.
 DROP TABLE #Q3Results;
 DROP TABLE #SouthEast;
 DROP TABLE #SouthEastProductTypes;
