@@ -113,10 +113,11 @@ FROM #Q3Results
 WHERE ((MONTH(SleDat) >= 7) AND (PrdCod NOT BETWEEN 1000 AND 1999));
 
 --I wasn't clear on if the head of the furniture division wanted the same requirements around region and year,
---but if so, then this query returns those results without the quarter.
+-- but if so, then this query returns those results without the quarter.
 SELECT TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp
 FROM #Q3Results
 WHERE PrdTyp = 'Furniture';
+--If there needs to be a single return query, we could union the results.
 
 DROP TABLE #Q3Results;
 DROP TABLE #SouthEast;
