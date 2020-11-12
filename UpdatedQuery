@@ -1,0 +1,102 @@
+CREATE TABLE #Q3Results
+(
+    TrnID INT,
+    TrnTyp VARCHAR(MAX), --Note sure what all will be in here, so we'll do varchar max.
+    PrdCod INT,
+    PrdTyp VARCHAR(MAX), --Note sure what all will be in here, so we'll do varchar max.
+    SleDat DATETIME,
+    LocStt CHAR(2),
+    SalPrc MONEY,
+    PayTyp VARCHAR(MAX), --Assuming this will be like "cash" "credit", etc, but would ideally be ids.
+);
+
+CREATE TABLE #SouthEast
+(
+    LocStt CHAR(2)
+);
+INSERT INTO #SouthEast (LocStt) VALUES ('AL');
+INSERT INTO #SouthEast (LocStt) VALUES ('AR');
+INSERT INTO #SouthEast (LocStt) VALUES ('FL');
+INSERT INTO #SouthEast (LocStt) VALUES ('GA');
+INSERT INTO #SouthEast (LocStt) VALUES ('KY');
+INSERT INTO #SouthEast (LocStt) VALUES ('LA');
+INSERT INTO #SouthEast (LocStt) VALUES ('MS');
+INSERT INTO #SouthEast (LocStt) VALUES ('NC');
+INSERT INTO #SouthEast (LocStt) VALUES ('SC');
+INSERT INTO #SouthEast (LocStt) VALUES ('TN');
+INSERT INTO #SouthEast (LocStt) VALUES ('VA');
+
+CREATE TABLE #GreatLakes
+(
+    LocStt CHAR(2)
+);
+INSERT INTO #GreatLakes (LocStt) VALUES ('IL');
+INSERT INTO #GreatLakes (LocStt) VALUES ('IN');
+INSERT INTO #GreatLakes (LocStt) VALUES ('MI');
+INSERT INTO #GreatLakes (LocStt) VALUES ('MN');
+INSERT INTO #GreatLakes (LocStt) VALUES ('OH');
+INSERT INTO #GreatLakes (LocStt) VALUES ('PA');
+INSERT INTO #GreatLakes (LocStt) VALUES ('WI');
+
+CREATE TABLE #SouthEastProductTypes
+(
+    PrdTyp VARCHAR(MAX)
+);
+INSERT INTO #SouthEastProductTypes (PrdTyp) VALUES ('Furniture');
+INSERT INTO #SouthEastProductTypes (PrdTyp) VALUES ('Kitchen Appliances');
+INSERT INTO #SouthEastProductTypes (PrdTyp) VALUES ('Clothing');
+INSERT INTO #SouthEastProductTypes (PrdTyp) VALUES ('Electronics');
+
+CREATE TABLE #GreatLakesProductTypes
+(
+    PrdTyp VARCHAR(MAX)
+);
+INSERT INTO #GreatLakesProductTypes (PrdTyp) VALUES ('Kitchen Appliances');
+INSERT INTO #GreatLakesProductTypes (PrdTyp) VALUES ('Clothing');
+INSERT INTO #GreatLakesProductTypes (PrdTyp) VALUES ('Shoes');
+
+CREATE TABLE #CaliforniaProductTypes
+(
+    PrdTyp VARCHAR(MAX)
+);
+INSERT INTO #CaliforniaProductTypes (PrdTyp) VALUES ('Electronics');
+INSERT INTO #CaliforniaProductTypes (PrdTyp) VALUES ('Shoes');
+
+CREATE TABLE #SalesYears
+(
+    SalesYear INT
+);
+INSERT INTO #SalesYears (SalesYear) VALUES (2018);
+INSERT INTO #SalesYears (SalesYear) VALUES (2019);
+INSERT INTO #SalesYears (SalesYear) VALUES (2020);
+
+
+
+--Fill with southeast sales.  Table is only filtered by state, region products, and year.
+INSERT INTO #Q3Results (TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp)
+SELECT s.[Transaction ID], s.[Transaction Type], s.[Product Code], s.[Product Type], s.[Date of Sale], s.[Location - State], s.[Sale Price], s.[Payment Type] 
+FROM SalesTransactions s
+JOIN #SouthEast se ON s.[Location - State] = se.LocStt
+JOIN #SouthEastProductTypes pt ON s.[Product Type] = pt.PrdTyp
+JOIN #SalesYears pt ON YEAR(s.[Product Type]) = pt.PrdTyp;
+
+--Fill with Great Lakes sales.  Table is only filtered by state, region products, and year.
+INSERT INTO #Q3Results (TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp)
+SELECT s.[Transaction ID], s.[Transaction Type], s.[Product Code], s.[Product Type], s.[Date of Sale], s.[Location - State], s.[Sale Price], s.[Payment Type] 
+FROM SalesTransactions s
+JOIN #GreatLakes gl ON s.[Location - State] = gl.LocStt
+JOIN #GreatLakesProductTypes pt ON s.[Product Type] = pt.PrdTyp
+JOIN #SalesYears pt ON YEAR(s.[Product Type]) = pt.PrdTyp;
+
+--Fill with specific state sales.  Table is only filtered by state, region products, and year.
+INSERT INTO #Q3Results (TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp)
+SELECT s.[Transaction ID], s.[Transaction Type], s.[Product Code], s.[Product Type], s.[Date of Sale], s.[Location - State], s.[Sale Price], s.[Payment Type] 
+FROM SalesTransactions s
+JOIN #CaliforniaProductTypes pt ON s.[Product Type] = pt.PrdTyp
+JOIN #SalesYears pt ON YEAR(s.[Product Type]) = pt.PrdTyp
+WHERE s.[Location - State] = 'CA';
+
+--Return query, further filtering the results from temp table that were already filtered on state, product, and year.
+SELECT TrnID, TrnTyp, PrdCod, PrdTyp, SleDat, LocStt, SalPrc, PayTyp
+FROM #Q3Results
+WHERE ((MONTH(SleDat) >= 7) AND (PrdCod NOT BETWEEN 1000 AND 1999));
